@@ -75,9 +75,9 @@ class BankAccount {
     // display account details
     @Override
     public String toString() {
-        return "Member name: " + this.memberName + "-" + "Account number: " + this.accountNumber + "-"
+        return "Member name: " + this.memberName + ", " + "Account number: " + this.accountNumber + ", "
                 + "Account balance: "
-                + this.accountBalance + "-" + "Minimum balance: " + this.minimumBalance;
+                + this.accountBalance + ", " + "Minimum balance: " + this.minimumBalance;
 
     }
 }

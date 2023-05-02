@@ -1,8 +1,10 @@
 package bankAccount;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 
 public class Main {
@@ -14,6 +16,9 @@ public class Main {
 
         // create a arraylist of bank accounts
         ArrayList<BankAccount> accounts = new ArrayList<BankAccount>();
+
+        // create a hashmap for transactions history
+        HashMap<String, ArrayList<Transaction>> transactions = new HashMap<String, ArrayList<Transaction>>();
 
         // create a menu
         message.accountTypeConfirmation();
@@ -32,13 +37,48 @@ public class Main {
                     System.out.println("Enter max withdraw limit");
                     double maxWithLimit = scan.nextDouble();
 
-                    if (accountBalance >= 2000) {
+                    if (accountBalance >= 2000 && memberName.length() > 0 && maxWithLimit >= 0) {
+
                         SavingsAccount account = new SavingsAccount(memberName, accountBalance, maxWithLimit);
                         accounts.add(account);
+
+                        // add transaction to the hashmap
+
+                        ArrayList<Transaction> transactionList = transactions.get(account.getAccountNumber());
+                        LocalDateTime now = LocalDateTime.now();
+
+                        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy - HH:mm:ss");
+
+                        String date = now.format(format);
+
+                        if (transactionList == null) {
+                            transactionList = new ArrayList<Transaction>();
+                            transactionList.add(new Transaction("Deposit", accountBalance, date));
+
+                            transactions.put(account.getAccountNumber(), transactionList);
+
+                        } else {
+                            transactionList.add(new Transaction("Deposit", accountBalance, date));
+                            transactions.put(account.getAccountNumber(), transactionList);
+                        }
+
+                        // printing success message
+
                         System.out.println("Account created successfully");
                         System.out.println("Account number is " + account.getAccountNumber());
                     } else {
-                        System.out.println("Minimum balance must be 2000");
+                        System.out.println("Account creation failed");
+                        if (accountBalance < 2000) {
+                            System.out.println("Minimum balance is 2000.");
+                        }
+
+                        if (memberName.length() == 0) {
+                            System.out.println("Name is required.");
+                        }
+                        if (maxWithLimit < 0) {
+                            System.out.println("Max withdraw limit must be positive.");
+                        }
+
                     }
 
                     // create a menu
@@ -52,9 +92,31 @@ public class Main {
                     String accountNumber = scan.next();
                     System.out.println("Enter amount to deposit");
                     double amount = scan.nextDouble();
+
                     for (BankAccount account : accounts) {
                         if (account.getAccountNumber().equals(accountNumber)) {
                             if (account.deposit(amount)) {
+
+                                // add transaction to the hashmap
+                                ArrayList<Transaction> transactionList = transactions.get(accountNumber);
+                                LocalDateTime now = LocalDateTime.now();
+
+                                DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy - HH:mm:ss");
+
+                                String date = now.format(format);
+
+                                if (transactionList == null) {
+                                    transactionList = new ArrayList<Transaction>();
+                                    transactionList.add(new Transaction("Deposit", amount, date));
+
+                                    transactions.put(accountNumber, transactionList);
+
+                                } else {
+                                    transactionList.add(new Transaction("Deposit", amount, date));
+                                    transactions.put(accountNumber, transactionList);
+                                }
+
+                                // printing success message
                                 System.out.println("Amount deposited successfully");
                             } else {
                                 System.out.println("Deposit failed");
@@ -77,6 +139,27 @@ public class Main {
                     for (BankAccount account : accounts) {
                         if (account.getAccountNumber().equals(accountNumber)) {
                             if (account.withdraw(amount)) {
+
+                                // add transaction to the hashmap
+                                ArrayList<Transaction> transactionList = transactions.get(accountNumber);
+                                LocalDateTime now = LocalDateTime.now();
+
+                                DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy - HH:mm:ss");
+
+                                String date = now.format(format);
+
+                                if (transactionList == null) {
+                                    transactionList = new ArrayList<Transaction>();
+                                    transactionList.add(new Transaction("Withdraw", amount, date));
+
+                                    transactions.put(accountNumber, transactionList);
+
+                                } else {
+                                    transactionList.add(new Transaction("Withdraw", amount, date));
+                                    transactions.put(accountNumber, transactionList);
+                                }
+
+                                // printing success message
                                 System.out.println("Amount withdrawn successfully");
                             } else {
                                 System.out.println("Withdraw failed");
@@ -141,7 +224,27 @@ public class Main {
                     choice = scan.nextInt();
                     message.taskConfirmation();
                     choice2 = scan.nextInt();
-                } else {
+                } else if (choice2 == 8) {
+                    // display transaction history
+                    System.out.println("Enter account number");
+                    String accountNumber = scan.next();
+                    ArrayList<Transaction> transactionList = transactions.get(accountNumber);
+                    if (transactionList == null) {
+                        System.out.println("No transaction history found");
+                    } else {
+                        System.out.println("Transaction history");
+                        for (Transaction transaction : transactionList) {
+                            transaction.displayTransaction();
+                        }
+                    }
+                    // create a menu
+                    message.accountTypeConfirmation();
+                    choice = scan.nextInt();
+                    message.taskConfirmation();
+                    choice2 = scan.nextInt();
+                }
+
+                else {
                     System.out.println("Invalid choice");
                     // create a menu
                     message.accountTypeConfirmation();
@@ -159,13 +262,42 @@ public class Main {
                     System.out.println("Enter account balance");
                     double accountBalance = scan.nextDouble();
 
-                    if (accountBalance >= 5000) {
+                    if (accountBalance >= 5000 && tradeLicenseNumber.length() > 0 && memberName.length() > 0) {
                         CurrentAccount account = new CurrentAccount(memberName, accountBalance, tradeLicenseNumber);
                         accounts.add(account);
+
+                        // add transaction to the hashmap
+
+                        ArrayList<Transaction> transactionList = transactions.get(account.getAccountNumber());
+                        LocalDateTime now = LocalDateTime.now();
+
+                        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy - HH:mm:ss");
+
+                        String date = now.format(format);
+
+                        if (transactionList == null) {
+                            transactionList = new ArrayList<Transaction>();
+                            transactionList.add(new Transaction("Deposit", accountBalance, date));
+
+                            transactions.put(account.getAccountNumber(), transactionList);
+
+                        } else {
+                            transactionList.add(new Transaction("Deposit", accountBalance, date));
+                            transactions.put(account.getAccountNumber(), transactionList);
+                        }
+
+                        // printing success message
                         System.out.println("Account created successfully");
                         System.out.println("Account number is " + account.getAccountNumber());
                     } else {
-                        System.out.println("Minimum balance must be 5000");
+                        System.out.println("Account creation failed.");
+                        if (accountBalance < 5000)
+                            System.out.println("Minimum balance is 5000.");
+                        if (tradeLicenseNumber.length() == 0)
+                            System.out.println("Trade license number is required.");
+                        if (memberName.length() == 0)
+                            System.out.println("Member name is required.");
+
                     }
 
                     // create a menu
@@ -182,6 +314,28 @@ public class Main {
                     for (BankAccount account : accounts) {
                         if (account.getAccountNumber().equals(accountNumber)) {
                             if (account.deposit(amount)) {
+
+                                // add transaction to the hashmap
+                                ArrayList<Transaction> transactionList = transactions.get(accountNumber);
+                                LocalDateTime now = LocalDateTime.now();
+
+                                DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy - HH:mm:ss");
+
+                                String date = now.format(format);
+
+                                if (transactionList == null) {
+                                    transactionList = new ArrayList<Transaction>();
+                                    transactionList.add(new Transaction("Deposit", amount, date));
+
+                                    transactions.put(accountNumber, transactionList);
+
+                                } else {
+                                    transactionList.add(new Transaction("Deposit", amount, date));
+                                    transactions.put(accountNumber, transactionList);
+                                }
+
+                                // printing success message
+
                                 System.out.println("Amount deposited successfully");
                             } else {
                                 System.out.println("Deposit failed");
@@ -203,6 +357,27 @@ public class Main {
                     for (BankAccount account : accounts) {
                         if (account.getAccountNumber().equals(accountNumber)) {
                             if (account.withdraw(amount)) {
+
+                                // add transaction to the hashmap
+                                ArrayList<Transaction> transactionList = transactions.get(accountNumber);
+                                LocalDateTime now = LocalDateTime.now();
+
+                                DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy - HH:mm:ss");
+
+                                String date = now.format(format);
+
+                                if (transactionList == null) {
+                                    transactionList = new ArrayList<Transaction>();
+                                    transactionList.add(new Transaction("Withdraw", amount, date));
+
+                                    transactions.put(accountNumber, transactionList);
+
+                                } else {
+                                    transactionList.add(new Transaction("Withdraw", amount, date));
+                                    transactions.put(accountNumber, transactionList);
+                                }
+
+                                // printing success message
                                 System.out.println("Amount withdrawn successfully");
                             } else {
                                 System.out.println("Withdraw failed");
@@ -225,6 +400,11 @@ public class Main {
                             System.out.println(account.toString());
                         }
                     }
+                    // create a menu
+                    message.accountTypeConfirmation();
+                    choice = scan.nextInt();
+                    message.taskConfirmation();
+                    choice2 = scan.nextInt();
 
                 } else if (choice2 == 5) {
                     // display all savings accounts
@@ -263,7 +443,27 @@ public class Main {
                     choice = scan.nextInt();
                     message.taskConfirmation();
                     choice2 = scan.nextInt();
-                } else {
+                } else if (choice2 == 8) {
+                    // display transaction history
+                    System.out.println("Enter account number");
+                    String accountNumber = scan.next();
+                    ArrayList<Transaction> transactionList = transactions.get(accountNumber);
+                    if (transactionList == null) {
+                        System.out.println("No transaction history found");
+                    } else {
+                        System.out.println("Transaction history");
+                        for (Transaction transaction : transactionList) {
+                            transaction.displayTransaction();
+                        }
+                    }
+                    // create a menu
+                    message.accountTypeConfirmation();
+                    choice = scan.nextInt();
+                    message.taskConfirmation();
+                    choice2 = scan.nextInt();
+                }
+
+                else {
                     System.out.println("Invalid choice");
                     // create a menu
                     message.accountTypeConfirmation();
