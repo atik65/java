@@ -1,4 +1,4 @@
-## bankingSystem is the entire project folder
+## bankingSystem is the entire project folder (open this folder in your IDE) and bankAccount is the package name.
 
 ## How to run the project
 
